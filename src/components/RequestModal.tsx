@@ -48,7 +48,7 @@ const RequestModal: React.FC<RequestModalProps> = ({
       setTimeout(() => {
         setSuccessMessage(null);
         closeModal();
-      }, 3000);
+      }, 1000);
     }
   };
 
