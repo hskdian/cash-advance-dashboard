@@ -9,6 +9,7 @@ import {
   ListItem,
   ListItemText,
   Paper,
+  Tooltip,
 } from "@mui/material";
 
 interface Transaction {
@@ -16,6 +17,8 @@ interface Transaction {
   date: string;
   amount: number;
   status: "Pending" | "Completed";
+  type: "Advanced" | "Repaid";
+  repaymentDate: string; // Repayment date
 }
 
 interface TransactionListProps {
@@ -28,6 +31,12 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions }) => {
   const filteredTransactions = transactions.filter((transaction) =>
     filter === "All" ? true : transaction.status === filter
   );
+
+  const sortedTransactions = filteredTransactions.sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
+
+  const displayedTransactions = sortedTransactions.slice(0, 5);
 
   return (
     <Paper elevation={3} sx={{ padding: "1rem", marginTop: "2rem" }}>
@@ -57,30 +66,30 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions }) => {
       </ButtonGroup>
 
       <List>
-        {filteredTransactions.map((transaction) => (
+        {displayedTransactions.map((transaction) => (
           <ListItem key={transaction.id} divider>
-            <ListItemText
-              primary={`Date: ${transaction.date}`}
-              secondary={
+            <Tooltip
+              title={
                 <>
-                  <Typography component="span" variant="body2">
-                    Amount: ${transaction.amount}
-                  </Typography>
-                  <br />
-                  <Typography
-                    component="span"
-                    variant="body2"
-                    color={
-                      transaction.status === "Completed"
-                        ? "primary"
-                        : "textSecondary"
-                    }
-                  >
-                    Status: {transaction.status}
-                  </Typography>
+                  <div>Transaction ID: {transaction.id}</div>
+                  {transaction.repaymentDate !== "N/A" && (
+                    <div>Repayment Date: {transaction.repaymentDate}</div>
+                  )}
                 </>
               }
-            />
+              arrow
+              placement="right"
+            >
+              <ListItemText
+                primary={`Date: ${transaction.date}`}
+                secondary={
+                  <Typography component="span" variant="body2">
+                    {transaction.type}: ${transaction.amount} | Status:{" "}
+                    {transaction.status}
+                  </Typography>
+                }
+              />
+            </Tooltip>
           </ListItem>
         ))}
       </List>
