@@ -36,3 +36,16 @@
     transform: rotate(360deg);
   }
 }
+
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 600px;
+  margin: auto;
+}
+
+.transactions-list {
+  display: grid;
+  gap: 8px;
+}

@@ -1,5 +1,15 @@
 // src/components/TransactionList.tsx
-import React from "react";
+
+import React, { useState } from "react";
+import {
+  Typography,
+  Button,
+  ButtonGroup,
+  List,
+  ListItem,
+  ListItemText,
+  Paper,
+} from "@mui/material";
 
 interface Transaction {
   id: number;
@@ -8,24 +18,73 @@ interface Transaction {
   status: "Pending" | "Completed";
 }
 
-const transactions: Transaction[] = [
-  { id: 1, date: "2024-10-29", amount: 100, status: "Completed" },
-  { id: 2, date: "2024-10-28", amount: 50, status: "Pending" },
-  // Add more mock transactions here
-];
+interface TransactionListProps {
+  transactions: Transaction[];
+}
 
-const TransactionList: React.FC = () => {
+const TransactionList: React.FC<TransactionListProps> = ({ transactions }) => {
+  const [filter, setFilter] = useState<"All" | "Pending" | "Completed">("All");
+
+  const filteredTransactions = transactions.filter((transaction) =>
+    filter === "All" ? true : transaction.status === filter
+  );
+
   return (
-    <div>
-      <h2>Recent Transactions</h2>
-      <ul>
-        {transactions.map((transaction) => (
-          <li key={transaction.id}>
-            {transaction.date}: ${transaction.amount} - {transaction.status}
-          </li>
+    <Paper elevation={3} sx={{ padding: "1rem", marginTop: "2rem" }}>
+      <Typography variant="h5" gutterBottom>
+        Recent Transactions
+      </Typography>
+
+      <ButtonGroup variant="outlined" sx={{ marginBottom: "1rem" }}>
+        <Button
+          onClick={() => setFilter("All")}
+          variant={filter === "All" ? "contained" : "outlined"}
+        >
+          All
+        </Button>
+        <Button
+          onClick={() => setFilter("Pending")}
+          variant={filter === "Pending" ? "contained" : "outlined"}
+        >
+          Pending
+        </Button>
+        <Button
+          onClick={() => setFilter("Completed")}
+          variant={filter === "Completed" ? "contained" : "outlined"}
+        >
+          Completed
+        </Button>
+      </ButtonGroup>
+
+      <List>
+        {filteredTransactions.map((transaction) => (
+          <ListItem key={transaction.id} divider>
+            <ListItemText
+              primary={`Date: ${transaction.date}`}
+              secondary={
+                <>
+                  <Typography component="span" variant="body2">
+                    Amount: ${transaction.amount}
+                  </Typography>
+                  <br />
+                  <Typography
+                    component="span"
+                    variant="body2"
+                    color={
+                      transaction.status === "Completed"
+                        ? "primary"
+                        : "textSecondary"
+                    }
+                  >
+                    Status: {transaction.status}
+                  </Typography>
+                </>
+              }
+            />
+          </ListItem>
         ))}
-      </ul>
-    </div>
+      </List>
+    </Paper>
   );
 };
 
